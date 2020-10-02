@@ -2,6 +2,7 @@ import cv2
 import numpy as np
 import face_recognition
 import os
+import pyttsx3
 from datetime import datetime
 # from time import sleep
 
@@ -26,6 +27,12 @@ def findEncodings(images):
         encodeList.append(encode)
     return encodeList
 
+def Speech(name):
+    engine = pyttsx3.init()
+    engine.say(name)
+    engine.runAndWait()
+
+
 def markAttendence(name):
     with open('D:\Image_processing_projects\Face_Recognition\Attendence.csv','r+') as f:
         myDataList = f.readlines()
@@ -38,13 +45,15 @@ def markAttendence(name):
         if name in nameList:
             name1 = 'Attendence Taken'
             cv2.putText(img,name1,(50,100),cv2.FONT_HERSHEY_COMPLEX,1,(0,0,255),2)
+            Speech(name1+name)
         elif name not in nameList:
-            name2 = 'Thank you For Enrolling'
+            name2 = "Thank you For Enrolling"
             now = datetime.now()
             dtString = now.strftime('%H:%M:%S')
             f.writelines(f'\n{name},{dtString}')
             cv2.putText(img, name2, (50, 100), cv2.FONT_HERSHEY_COMPLEX, 1, (0, 0, 255), 2)
             # sleep(2.0)
+            Speech(name2+name)
 
 encodeListKnown = findEncodings(images)
 print('Encoding Complete')
@@ -74,6 +83,7 @@ while True:
             cv2.rectangle(img,(x1,y2-35),(x2,y2),(0,255,0),cv2.FILLED)
             cv2.putText(img,name,(x1+6,y2-6),cv2.FONT_HERSHEY_COMPLEX,1,(255,255,255),2)
             markAttendence(name)
+            # Speech(name)
 
     cv2.imshow('Webcam',img)
     if cv2.waitKey(20) & 0xFF == ord('q'):
